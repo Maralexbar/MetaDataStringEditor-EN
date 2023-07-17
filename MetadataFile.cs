@@ -27,14 +27,14 @@ namespace MetaDataStringEditor {
             ReadLiteral();
             ReadStrByte();
 
-            Logger.I("基础读取完成");
+            Logger.I("Basic read complete");
         }
 
         private void ReadHeader() {
-            Logger.I("读取头部");
+            Logger.I("Read Header");
             uint vansity = reader.ReadUInt32();
             if (vansity != 0xFAB11BAF) {
-                throw new Exception("标志检查不通过");
+                throw new Exception("Flag Check Failed");
             }
             int version = reader.ReadInt32();
             stringLiteralOffset = reader.ReadUInt32();      // 列表区的位置，后面不会改了
@@ -45,7 +45,7 @@ namespace MetaDataStringEditor {
         }
 
         private void ReadLiteral() {
-            Logger.I("读取Literal");
+            Logger.I("Read Literal");
             ProgressBar.SetMax((int)stringLiteralCount / 8);
 
             reader.BaseStream.Position = stringLiteralOffset;
@@ -59,7 +59,7 @@ namespace MetaDataStringEditor {
         }
 
         private void ReadStrByte() {
-            Logger.I("读取字符串的Bytes");
+            Logger.I("Read Bytes");
             ProgressBar.SetMax(stringLiterals.Count);
 
             for (int i = 0; i < stringLiterals.Count; i++) {
@@ -77,7 +77,7 @@ namespace MetaDataStringEditor {
             reader.BaseStream.CopyTo(writer.BaseStream);
 
             // 更新Literal
-            Logger.I("更新Literal");
+            Logger.I("Update Literal");
             ProgressBar.SetMax(stringLiterals.Count);
             writer.BaseStream.Position = stringLiteralOffset;
             uint count = 0;
@@ -108,7 +108,7 @@ namespace MetaDataStringEditor {
             stringLiteralDataCount = count;
 
             // 写入string
-            Logger.I("更新String");
+            Logger.I("Update String");
             ProgressBar.SetMax(strBytes.Count);
             writer.BaseStream.Position = stringLiteralDataOffset;
             for (int i = 0; i < strBytes.Count; i++) {
@@ -117,12 +117,12 @@ namespace MetaDataStringEditor {
             }
 
             // 更新头部
-            Logger.I("更新头部");
+            Logger.I("Update Header");
             writer.BaseStream.Position = DataInfoPosition;
             writer.Write(stringLiteralDataOffset);
             writer.Write(stringLiteralDataCount);
 
-            Logger.I("更新完成");
+            Logger.I("Update Completed");
             writer.Close();
         }
         
